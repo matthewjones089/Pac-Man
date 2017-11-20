@@ -10,3 +10,7 @@ Here are some screenshots of the game and map editor:
 Map Editor:
 
 ![map editor](https://user-images.githubusercontent.com/33097312/33034228-1bc297ea-ce1f-11e7-9a15-cb67ee4d1ab2.png)
+
+Gameplay on a custom maze:
+
+![custom maze](https://user-images.githubusercontent.com/33097312/33034233-20357702-ce1f-11e7-8b0e-7b5659f2be05.png)
