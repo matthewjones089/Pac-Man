@@ -19,7 +19,7 @@ Original Pac-Man Maze in Action:
 
 Map Editor:
 
-![map editor](https://user-images.githubusercontent.com/33097312/33036838-8ca4bbc0-ce27-11e7-9835-1b79fc40881e.png)
+
 
 Custom Maze in Action:
 
