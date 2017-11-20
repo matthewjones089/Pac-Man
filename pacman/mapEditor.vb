@@ -120,27 +120,6 @@ Public Class MJ_MapEditor
 
                             Next
                         Next
-                        ' Otherwise, checks the surrounding blocks to ensure no single, not connected tiles will be left after the delete.
-                        'If (mapMaze.mazePathType(pos.X, pos.Y - 1) = maze.pathType.block And mapMaze.mazePathType(pos.X, pos.Y - 2) <> maze.pathType.block) Or
-                        '(mapMaze.mazePathType(pos.X + 1, pos.Y - 1) = maze.pathType.block And mapMaze.mazePathType(pos.X + 1, pos.Y - 2) <> maze.pathType.block) Or
-                        '(mapMaze.mazePathType(pos.X, pos.Y + 2) = maze.pathType.block And mapMaze.mazePathType(pos.X, pos.Y + 3) <> maze.pathType.block) Or
-                        '(mapMaze.mazePathType(pos.X + 1, pos.Y + 2) = maze.pathType.block And mapMaze.mazePathType(pos.X + 1, pos.Y + 3) <> maze.pathType.block) Or
-                        '(mapMaze.mazePathType(pos.X + 2, pos.Y) = maze.pathType.block And mapMaze.mazePathType(pos.X + 3, pos.Y) <> maze.pathType.block) Or
-                        '(mapMaze.mazePathType(pos.X + 2, pos.Y + 1) = maze.pathType.block And mapMaze.mazePathType(pos.X + 3, pos.Y + 1) <> maze.pathType.block) Or
-                        '(mapMaze.mazePathType(pos.X - 1, pos.Y) = maze.pathType.block And mapMaze.mazePathType(pos.X - 2, pos.Y) <> maze.pathType.block) Or
-                        '(mapMaze.mazePathType(pos.X - 1, pos.Y + 1) = maze.pathType.block And mapMaze.mazePathType(pos.X - 2, pos.Y + 1) <> maze.pathType.block) Then
-
-                        'If (mapMaze.mazePathType(pos.X, pos.Y - 1) = maze.pathType.block And mapMaze.mazePathType(pos.X, pos.Y - 2) <> maze.pathType.block) Or
-                        '        (mapMaze.mazePathType(pos.X + 1, pos.Y - 1) = maze.pathType.block And mapMaze.mazePathType(pos.X + 1, pos.Y - 2) <> maze.pathType.block) Or
-                        '        (mapMaze.mazePathType(pos.X, pos.Y + 2) = maze.pathType.block And mapMaze.mazePathType(pos.X, pos.Y + 3) <> maze.pathType.block) Or
-                        '        (mapMaze.mazePathType(pos.X + 1, pos.Y + 2) = maze.pathType.block And mapMaze.mazePathType(pos.X + 1, pos.Y + 3) <> maze.pathType.block) Or
-                        '        (mapMaze.mazePathType(pos.X + 2, pos.Y) = maze.pathType.block And mapMaze.mazePathType(pos.X + 3, pos.Y) <> maze.pathType.block) Or
-                        '        (mapMaze.mazePathType(pos.X + 2, pos.Y + 1) = maze.pathType.block And mapMaze.mazePathType(pos.X + 3, pos.Y + 1) <> maze.pathType.block) Or
-                        '        (mapMaze.mazePathType(pos.X - 1, pos.Y) = maze.pathType.block And mapMaze.mazePathType(pos.X - 2, pos.Y) <> maze.pathType.block) Or
-                        '        (mapMaze.mazePathType(pos.X - 1, pos.Y + 1) = maze.pathType.block And mapMaze.mazePathType(pos.X - 2, pos.Y + 1) <> maze.pathType.block) Then
-                        ' If tiles will be left unconnected, the outline box will be set to red, to indicate nthe current block cannot be deleted.
-
-
                     End If
                 Case mode.addEnergizer
                     ' If the uer enables add energizer.
@@ -296,47 +275,6 @@ Public Class MJ_MapEditor
                             End If
                         Next
                     Next
-
-                    'If (mapMaze.mazePathType(pos.X, pos.Y - 1) = maze.pathType.block And mapMaze.mazePathType(pos.X, pos.Y - 2) <> maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X + 1, pos.Y - 1) = maze.pathType.block And mapMaze.mazePathType(pos.X + 1, pos.Y - 2) <> maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X, pos.Y + 2) = maze.pathType.block And mapMaze.mazePathType(pos.X, pos.Y + 3) <> maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X + 1, pos.Y + 2) = maze.pathType.block And mapMaze.mazePathType(pos.X + 1, pos.Y + 3) <> maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X + 2, pos.Y) = maze.pathType.block And mapMaze.mazePathType(pos.X + 3, pos.Y) <> maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X + 2, pos.Y + 1) = maze.pathType.block And mapMaze.mazePathType(pos.X + 3, pos.Y + 1) <> maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X - 1, pos.Y) = maze.pathType.block And mapMaze.mazePathType(pos.X - 2, pos.Y) <> maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X - 1, pos.Y + 1) = maze.pathType.block And mapMaze.mazePathType(pos.X - 2, pos.Y + 1) <> maze.pathType.block) Then
-
-                    'If (mapMaze.mazePathType(pos.X, pos.Y - 1) = maze.pathType.block And mapMaze.mazePathType(pos.X, pos.Y - 2) = maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X + 1, pos.Y - 1) = maze.pathType.block And mapMaze.mazePathType(pos.X + 1, pos.Y - 2) = maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X, pos.Y + 2) = maze.pathType.block And mapMaze.mazePathType(pos.X, pos.Y + 3) = maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X + 1, pos.Y + 2) = maze.pathType.block And mapMaze.mazePathType(pos.X + 1, pos.Y + 3) = maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X + 2, pos.Y) = maze.pathType.block And mapMaze.mazePathType(pos.X + 3, pos.Y) = maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X + 2, pos.Y + 1) = maze.pathType.block And mapMaze.mazePathType(pos.X + 3, pos.Y + 1) = maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X - 1, pos.Y) = maze.pathType.block And mapMaze.mazePathType(pos.X - 2, pos.Y) = maze.pathType.block) Or
-                    '    (mapMaze.mazePathType(pos.X - 1, pos.Y + 1) = maze.pathType.block And mapMaze.mazePathType(pos.X - 2, pos.Y + 1) = maze.pathType.block) Then
-                    'Else
-                    '    ' The next If Statements determine what each tile within the outlined box become once deleted.
-                    '    If mapMaze.data(New Point(pos.X, pos.Y)) = maze.mazeObjects.blank Then
-                    '        mapMaze.mazePathType(pos.X, pos.Y) = maze.pathType.blank
-                    '    Else
-                    '        mapMaze.mazePathType(pos.X, pos.Y) = maze.pathType.dot
-                    '    End If
-                    '    If mapMaze.data(New Point(pos.X + 1, pos.Y)) = maze.mazeObjects.blank Then
-                    '        mapMaze.mazePathType(pos.X + 1, pos.Y) = maze.pathType.blank
-                    '    Else
-                    '        mapMaze.mazePathType(pos.X + 1, pos.Y) = maze.pathType.dot
-                    '    End If
-                    '    If mapMaze.data(New Point(pos.X, pos.Y + 1)) = maze.mazeObjects.blank Then
-                    '        mapMaze.mazePathType(pos.X, pos.Y + 1) = maze.pathType.blank
-                    '    Else
-                    '        mapMaze.mazePathType(pos.X, pos.Y + 1) = maze.pathType.dot
-                    '    End If
-                    '    If mapMaze.data(New Point(pos.X + 1, pos.Y + 1)) = maze.mazeObjects.blank Then
-                    '        mapMaze.mazePathType(pos.X + 1, pos.Y + 1) = maze.pathType.blank
-                    '    Else
-                    '        mapMaze.mazePathType(pos.X + 1, pos.Y + 1) = maze.pathType.dot
-                    '    End If
-                    'End If
                 End If
             Case mode.addEnergizer
                 ' If the user enables add energizer.
