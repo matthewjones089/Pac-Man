@@ -1,5 +1,5 @@
 # Pac-Man
-A-Level Pac-Man project in VB.NET.
+Pac-Man project in VB.NET.
 
 This version includes:
 A fully functioning, playable Pac-Man game.
