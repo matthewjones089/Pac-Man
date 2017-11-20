@@ -17,4 +17,4 @@ Gameplay on a custom maze:
 
 ![custom maze](https://user-images.githubusercontent.com/33097312/33034233-20357702-ce1f-11e7-8b0e-7b5659f2be05.png)
 
-This screenshot shows the previously mentioned custom maze fully functioning and being played on.
+This screenshot shows the previously mentioned custom maze, fully functioning and played on.
