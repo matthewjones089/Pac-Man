@@ -130,7 +130,7 @@ Public Class maze
         End Get
         Set(value As Integer)
             If (p.X >= 0 And p.X <= 27) And (p.Y >= 0 And p.Y <= 30) Then
-                If value = mazeObjects.blank And _data(p.X, p.Y) = mazeObjects.dot Then
+                If value = mazeObjects.blank And (_data(p.X, p.Y) = mazeObjects.dot Or _data(p.X, p.Y) = mazeObjects.energizer) Then
                     _dotsEaten += 1
                 End If
                 _data(p.X, p.Y) = value
@@ -233,11 +233,27 @@ Public Class maze
         For y = 0 To 30
             For x = 0 To 27
                 _data(x, y) = _save(x, y)
-                If _save(x, y) = mazeObjects.dot Then
+                If _save(x, y) = mazeObjects.dot Or _save(x, y) = mazeObjects.energizer Then
                     _dotsTotal += 1
                 End If
             Next
         Next
+
+    End Sub
+
+    Public Sub saveMaze(filename As String)
+
+        Dim stream As FileStream
+
+        stream = New FileStream(filename, FileMode.Create)
+
+        For y = 0 To 30
+            For x = 0 To 27
+                stream.WriteByte(_path(x, y).pathType)
+            Next
+        Next
+
+        Stream.Close()
 
     End Sub
 
@@ -307,8 +323,7 @@ Public Class maze
 
     Public Sub pathToData()
 
-
-        ' Determines the type of tile that should be input into each position of the maze.
+        ' Determines the type of tile that should be placed into each position of the maze.
         For y = 1 To 29
             For x = 1 To 26
                 If _path(x, y).pathType = pathType.block And _path(x, y).fixed = False Then
@@ -327,7 +342,6 @@ Public Class maze
                         End If
                     End If
                 End If
-
             Next
         Next
 
@@ -438,7 +452,7 @@ Public Class maze
     End Function
 
     Private Sub adjustEdges()
-        ' Handles the adjustments required when the user requests to place a tile on an edge.
+        ' Handles the adjustments required when the user has placed a tile on an edge.
 
         Dim x, y As Integer
         Dim p1, p2 As Point
@@ -503,6 +517,91 @@ Public Class maze
             End If
 
         Next
+
+        ' Handle top of maze
+        For x = 2 To 25
+            If _path(x, 1).pathType = pathType.block And _path(x - 1, 1).pathType <> pathType.block Then
+                _data(x, 0) = 41
+                _data(x, 1) = 23
+            End If
+            If _path(x, 1).pathType = pathType.block And _path(x + 1, 1).pathType <> pathType.block Then
+                _data(x, 0) = 40
+                _data(x, 1) = 22
+            End If
+            If _path(x, 1).pathType = pathType.block And _path(x - 1, 1).pathType = pathType.block And _path(x + 1, 1).pathType = pathType.block Then
+                _data(x, 0) = 44
+                _data(x, 1) = 45
+            End If
+            If _path(x, 1).pathType <> pathType.block Then
+                _data(x, 0) = defaultMaze(0, x)
+            End If
+        Next
+
+        If _path(1, 1).pathType = pathType.block Then
+            _data(0, 0) = 58
+            _data(0, 1) = 36
+            _data(1, 0) = 44
+            _data(1, 1) = 45
+        Else
+            _data(0, 0) = defaultMaze(0, 0)
+            _data(0, 1) = defaultMaze(1, 0)
+            _data(1, 0) = defaultMaze(0, 1)
+        End If
+
+        If _path(26, 1).pathType = pathType.block Then
+            _data(27, 0) = 59
+            _data(27, 1) = 37
+            _data(26, 0) = 44
+            _data(26, 1) = 45
+        Else
+            _data(27, 0) = defaultMaze(0, 27)
+            _data(27, 1) = defaultMaze(1, 27)
+            _data(26, 0) = defaultMaze(0, 26)
+        End If
+
+        ' Handle bottom of maze
+        For x = 2 To 25
+            If _path(x, 29).pathType = pathType.block And _path(x - 1, 29).pathType <> pathType.block Then
+                _data(x, 30) = 69
+                _data(x, 29) = 23
+            End If
+            If _path(x, 29).pathType = pathType.block And _path(x + 1, 29).pathType <> pathType.block Then
+                _data(x, 30) = 57
+                _data(x, 29) = 22
+            End If
+            If _path(x, 29).pathType = pathType.block And _path(x - 1, 29).pathType = pathType.block And _path(x + 1, 29).pathType = pathType.block Then
+                _data(x, 30) = 43
+                _data(x, 29) = 45
+            End If
+            If _path(x, 29).pathType <> pathType.block Then
+                _data(x, 30) = defaultMaze(30, x)
+            End If
+        Next
+
+        If _path(1, 29).pathType = pathType.block Then
+            _data(0, 30) = 70
+            _data(0, 29) = 36
+            _data(1, 30) = 43
+            _data(1, 29) = 45
+        Else
+            _data(0, 30) = defaultMaze(30, 0)
+            _data(0, 29) = defaultMaze(29, 0)
+            _data(1, 30) = defaultMaze(30, 1)
+        End If
+
+        If _path(26, 29).pathType = pathType.block Then
+            _data(27, 30) = 71
+            _data(27, 29) = 37
+            _data(26, 30) = 43
+            _data(26, 29) = 45
+        Else
+            _data(27, 30) = defaultMaze(30, 27)
+            _data(27, 29) = defaultMaze(29, 27)
+            _data(26, 30) = defaultMaze(30, 26)
+        End If
+
+
+
 
     End Sub
 

@@ -507,8 +507,11 @@
             Dim tileSize As Size
             tileSize = _geTile(_geMap(n).tilesetIndex).size
 
+            Dim tileOffset As Point
+            tileOffset = _geMap(n).point
+
             Dim tilePos As Point
-            tilePos = New Point(Int(p.X / tileSize.Width), Int(p.Y / tileSize.Height))
+            tilePos = New Point(Int((p.X - tileOffset.X) / tileSize.Width), Int((p.Y - tileOffset.Y) / tileSize.Height))
 
             For yy = tilePos.Y To tilePos.Y + (_geFont(index).size.Height / tileSize.Height) + 1
                 For xx = tilePos.X To tilePos.X + ((_geFont(index).size.Width * Len(text)) / tileSize.Width) + 1
@@ -957,8 +960,11 @@
                     Dim tileSize As Size
                     tileSize = _parent._geTile(_parent._geMap(n).tilesetIndex).size
 
+                    Dim tileOffset As Point
+                    tileOffset = _parent._geMap(n).point
+
                     Dim tilePos As Point
-                    tilePos = New Point(Int(point.X / tileSize.Width), Int(point.Y / tileSize.Height))
+                    tilePos = New Point(Int((point.X - tileOffset.X) / tileSize.Width), Int((point.Y - tileOffset.Y) / tileSize.Height))
 
                     For yy = tilePos.Y To tilePos.Y + (_size.Height / tileSize.Height) + 1
                         For xx = tilePos.X To tilePos.X + (_size.Width / tileSize.Width) + 1
@@ -1020,6 +1026,14 @@
             End Get
             Set(value As geAnimationMode)
                 _animateMode = value
+                If _animateMode = geAnimationMode.geForward Or _animateMode = geAnimationMode.geBoth Then
+                    _animateDirection = 1
+                Else
+                    If _animateMode = geAnimationMode.geBackwards Then
+                        _animateDirection = -1
+                    End If
+                End If
+
             End Set
         End Property
 

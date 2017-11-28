@@ -1,7 +1,7 @@
 ﻿Imports System.IO
 Imports System.Text
 
-Public Class MJ_MapEditor
+Public Class MapEditor
 
     ' Declare constants for dimensions of the GUI, scale and FPS.
     Public Const CLIENT_WIDTH = 224
@@ -27,113 +27,97 @@ Public Class MJ_MapEditor
     Dim mapCursor As gameEngine.sprite
     Dim mapPacman As gameEngine.sprite
 
+    ' New maze object
     Private mapMaze As New maze
+
+    ' New temporary maze object (used to determine whether a block deletion is valid)
+    Private mapMazeDelete As New maze
+
+    ' Block placement mode (default to addBlock)
     Dim blockMode As Integer = mode.addBlock
 
-    Private Sub MJ_MapEditor_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub MapEditor_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        ' On Form Load, initialize the map editor
         initialize()
 
     End Sub
 
     Public Sub mapEngine_geGameLogic() Handles mapEngine.geGameLogic
 
+        ' This is the geGameLogic event.
+        ' This is triggered once per frame by the gameEngine.
+
+        ' There is no game logic
+
     End Sub
 
     Public Sub mapEngine_geRenderScene() Handles mapEngine.geRenderScene
 
+        ' This is the geRenderScene event.
+        ' This is triggered once per frame by the gameEngine.
+
+        ' If there is mouse data (i.e. the mouse if over the gameSurface)...
         If mapEngine.getMouse IsNot Nothing Then
+
+            ' Set the mapCursor point (measured in 8x8 tile units)
             mapCursor.point = New Point(Int(mapEngine.getMouse.Location.X / (8 * CLIENT_SCALE)) * 8, Int(mapEngine.getMouse.Location.Y / (8 * CLIENT_SCALE)) * 8)
+
         End If
 
     End Sub
 
     Public Sub mapEngine_geMouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles mapEngine.geMouseMove
-        ' Handles mouse movement.
 
-        Dim pos As Point
+        ' This is the geMouseMove event.
+        ' This is triggered once per frame by the gameEngine and reports mouse movement
 
-        pos = New Point(Int(e.Location.X / (8 * CLIENT_SCALE)), Int(e.Location.Y / (8 * CLIENT_SCALE)))
+        ' Get the current mouse position
+        Dim pos As Point = New Point(Int(e.Location.X / (8 * CLIENT_SCALE)), Int(e.Location.Y / (8 * CLIENT_SCALE)))
 
+        ' Set the mapCursor point (measured in 8x8 tile units)
         mapCursor.point = New Point(pos.X * 8, pos.Y * 8)
 
+        ' As long as the mouse cursor is within the gameSurface area...
         If pos.X < 27 And pos.Y < 30 Then
-            ' Depending upon the mode indicated by the blockMode variable, a different outlineing box is shown.
+
+            ' Depending upon the mode indicated by the blockMode variable, a different outlining box is shown.
             Select Case blockMode
+
                 Case mode.addBlock
-                    ' If the user enables add block.
-                    ' Performs checks to see if any tiles within the outlined box are fixed.
+
+                    ' If addBlock mode is active then check whether the tiles under the cursor are fixed
+                    ' If they are then the cursor is red, otherwise it's green
                     If mapMaze.mazeBlockFixed(pos.X, pos.Y) Or mapMaze.mazeBlockFixed(pos.X + 1, pos.Y) Or mapMaze.mazeBlockFixed(pos.X, pos.Y + 1) Or mapMaze.mazeBlockFixed(pos.X + 1, pos.Y + 1) Then
-                        ' If so the outline box is red, to indicate a block cannot be placed there.
                         mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(0, 0)
                     Else
-                        ' Otherwise, the box is green, to indicate a block can be placed there.
                         mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(1, 1)
                     End If
+
                 Case mode.deleteBlock
-                    ' If the user enables delete block.
-                    ' Once again, performs checks to see if any tiles within the outlined box are fixed.
-                    If mapMaze.mazeBlockFixed(pos.X, pos.Y) Or mapMaze.mazeBlockFixed(pos.X + 1, pos.Y) Or mapMaze.mazeBlockFixed(pos.X, pos.Y + 1) Or mapMaze.mazeBlockFixed(pos.X + 1, pos.Y + 1) Then
-                        'If so the outlined box is red, to indicate the block cannot be deleted.
+
+                    ' If deleteBlock mode is active then check whether deletion is allowed at this position
+                    ' If it is not then the cursor is red, otherwise it's green
+                    If checkDelete(pos.X, pos.Y) = False Then
                         mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(0, 0)
                     Else
-
-                        For y = 1 To 28
-                            For x = 1 To 26
-                                If (x = pos.X And y = pos.Y) Then
-
-                                    If ((mapMaze.mazeBlockFixed(x - 1, y - 1) = True) And (mapMaze.mazeBlockFixed(x - 1, y) = True) And (mapMaze.mazeBlockFixed(x + 1, y - 1) = True) And (mapMaze.mazeBlockFixed(x, y - 1) = True) And (mapMaze.mazeBlockFixed(x - 1, y + 1) = True) Or
-                                                (mapMaze.mazeBlockFixed(x + 2, y + 2) = True) And (mapMaze.mazeBlockFixed(x + 2, y) = True) And (mapMaze.mazeBlockFixed(x + 2, y + 1) = True) And (mapMaze.mazeBlockFixed(x, y + 2) = True) And (mapMaze.mazeBlockFixed(x + 1, y + 2) = True) Or
-                                                (mapMaze.mazeBlockFixed(x, y - 1) = True) And (mapMaze.mazeBlockFixed(x + 1, y - 1) = True) And (mapMaze.mazeBlockFixed(x + 2, y - 1) = True) And (mapMaze.mazeBlockFixed(x + 2, y) = True) And (mapMaze.mazeBlockFixed(x + 2, y + 1) = True) Or
-                                                (mapMaze.mazeBlockFixed(x - 1, y) = True) And (mapMaze.mazeBlockFixed(x - 1, y + 1) = True) And (mapMaze.mazeBlockFixed(x - 1, y + 2) = True) And (mapMaze.mazeBlockFixed(x, y + 2) = True) And (mapMaze.mazeBlockFixed(x + 1, y + 2) = True) Or
-                                                (mapMaze.mazeBlockFixed(x - 1, y - 1) = True) And (mapMaze.mazeBlockFixed(x, y - 1) = True) And (mapMaze.mazeBlockFixed(x + 1, y - 1) = True) And (mapMaze.mazeBlockFixed(x + 2, y - 1) = True) Or
-                                                (mapMaze.mazeBlockFixed(x - 1, y + 2) = True) And (mapMaze.mazeBlockFixed(x, y + 2) = True) And (mapMaze.mazeBlockFixed(x + 1, y + 2) = True) And (mapMaze.mazeBlockFixed(x + 2, y + 2) = True) Or
-                                                (mapMaze.mazeBlockFixed(x - 1, y - 1) = True) And (mapMaze.mazeBlockFixed(x - 1, y) = True) And (mapMaze.mazeBlockFixed(x - 1, y + 1) = True) And (mapMaze.mazeBlockFixed(x - 1, y + 2) = True) Or
-                                                (mapMaze.mazeBlockFixed(x + 2, y - 1) = True) And (mapMaze.mazeBlockFixed(x + 2, y) = True) And (mapMaze.mazeBlockFixed(x + 2, y + 1) = True) And (mapMaze.mazeBlockFixed(x + 2, y + 2) = True)) Then
-                                        ' Otherwise, the outline box is set to green, to indicate the current block can be deleted.
-                                        mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(1, 1)
-
-                                    'ElseIf (mapMaze.mazePathType(x + 2, y) = maze.pathType.block And mapMaze.mazeBlockFixed(x + 2, y) = False) And mapMaze.mazePathType(x + 3, y) <> maze.pathType.block Then
-                                    '    ' Otherwise, the outline box is set to green, to indicate the current block can be deleted.
-                                    '    mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(0, 0)
-                                    Else
-                                        ' Otherwise, the outline box is set to green, to indicate the current block can be deleted.
-                                        mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(0, 0)
-                                    End If
-                                    If ((x > 2 And x < 25) And (y > 2 And y < 27)) Then
-                                        If (mapMaze.mazePathType(x, y - 1) = maze.pathType.block And mapMaze.mazePathType(x, y - 2) <> maze.pathType.block) Or
-                                (mapMaze.mazePathType(x + 1, y - 1) = maze.pathType.block And mapMaze.mazePathType(x + 1, y - 2) <> maze.pathType.block) Or
-                                (mapMaze.mazePathType(x, y + 2) = maze.pathType.block And mapMaze.mazePathType(x, y + 3) <> maze.pathType.block) Or
-                                (mapMaze.mazePathType(x + 1, y + 2) = maze.pathType.block And mapMaze.mazePathType(x + 1, y + 3) <> maze.pathType.block) Or
-                                (mapMaze.mazePathType(x + 2, y) = maze.pathType.block And mapMaze.mazePathType(x + 3, y) <> maze.pathType.block) Or
-                                (mapMaze.mazePathType(x + 2, y + 1) = maze.pathType.block And mapMaze.mazePathType(x + 3, y + 1) <> maze.pathType.block) Or
-                                (mapMaze.mazePathType(x - 1, y) = maze.pathType.block And mapMaze.mazePathType(x - 2, y) <> maze.pathType.block) Or
-                                (mapMaze.mazePathType(x - 1, y + 1) = maze.pathType.block And mapMaze.mazePathType(x - 2, y + 1) <> maze.pathType.block) Then
-                                            ' Otherwise, the outline box is set to green, to indicate the current block can be deleted.
-                                            mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(0, 0)
-                                        Else
-                                            ' Otherwise, the outline box is set to green, to indicate the current block can be deleted.
-                                            mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(1, 1)
-                                        End If
-                                    End If
-                                End If
-
-                            Next
-                        Next
+                        mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(1, 1)
                     End If
+
                 Case mode.addEnergizer
-                    ' If the uer enables add energizer.
-                    ' Performs checks to see if any tiles within the outlined box are fixed and are not labeled as blocks.
+
+                    ' If addEnergizer mode is active then check whether the tile under the cursor is fixed or a block
+                    ' If is is then the cursor is red, otherwise it's green
                     If mapMaze.mazePathType(pos.X, pos.Y) <> maze.pathType.block And mapMaze.mazeBlockFixed(pos.X, pos.Y) = False Then
-                        ' If so the outline box is set to green, to indicate that an energizer can be placed in that position.
                         mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(3, 3)
                     Else
-                        ' Otherwise, the outline box is set to red, to indicate that an energizer cannot be placed in that position.
                         mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(2, 2)
                     End If
+
                 Case mode.addDot
-                    ' If the user enables add dot.
-                    ' Performs checks to see if any tiles within the outlined box are fixed and are not labeled as blocks.
+
+                    ' If addDot mode is active then check whether the tile under the cursor is fixed or a block
+                    ' If is is then the cursor is red, otherwise it's green
                     If mapMaze.mazePathType(pos.X, pos.Y) <> maze.pathType.block And mapMaze.mazeBlockFixed(pos.X, pos.Y) = False Then
                         ' If so the outline box is set to green, to indicate that a dot can be placed in that position.
                         mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(3, 3)
@@ -141,182 +125,155 @@ Public Class MJ_MapEditor
                         ' Otherwise, the outline box is set to red, to indicate that a dot cannot be placed in that position.
                         mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(2, 2)
                     End If
+
                 Case mode.deleteDot
-                    ' If the user enables delete dot.
-                    ' Performs checks to see if any tiles within the outlined box are fixed and are labeled as dots.
+
+                    ' If deleteDot mode is active then check whether the tile under the cursor is fixed or a not a dot
+                    ' If is is then the cursor is red, otherwise it's green
                     If mapMaze.mazePathType(pos.X, pos.Y) = maze.pathType.dot And mapMaze.mazeBlockFixed(pos.X, pos.Y) = False Then
-                        ' If so the outline box is set to green, to indicate that a dot can be deleted from that position.
                         mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(3, 3)
                     Else
-                        ' Otherwise, the outline box is set to red, to indicate that a dot cannot be deleted from that position.
                         mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(2, 2)
                     End If
+
                 Case mode.deleteEnergizer
-                    ' If the user enables delete energizer.
-                    ' Performs checks to see if any tiles within the outlined box are fixed and are labeled as energizers.
+
+                    ' If deleteEnergizer mode is active then check whether the tile under the cursor is fixed or a not an energizer
+                    ' If is is then the cursor is red, otherwise it's green
                     If mapMaze.mazePathType(pos.X, pos.Y) = maze.pathType.energizer And mapMaze.mazeBlockFixed(pos.X, pos.Y) = False Then
-                        ' If so the outline box is set to green, to indicate that an energizer can be deleted from that position.
                         mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(3, 3)
                     Else
-                        ' Otherwise, the outline box is set to red, to indicate that an energizer cannot be deleted from that position.
                         mapCursor.animationRange = New gameEngine.sprite.geAnimationRange(2, 2)
                     End If
 
             End Select
         End If
 
-        ' Debug
-        Dim off As Integer
-        For y = -2 To 3
-            For x = -2 To 3
-                If mapMaze.mazeBlockFixed(pos.X + x, pos.Y + y) = True Then
-                    off = 12
-                Else
-                    off = 0
-                End If
-                If mapMaze.path(New Point(pos.X + x, pos.Y + y)).pathType = maze.pathType.block Then
-                    If x < 0 Or x > 1 Or y < 0 Or y > 1 Then
-                        mapEngine.mapByName("debug").value(New Point(2 + x, 2 + y)) = 51 + off
+        ' If debugging is enabled...
+        If ToolStrip_Debug.Checked = True Then
+
+            ' Draw a representation of the 6x6 blocks that surround the cursor
+            ' This shows fixed blocks, fixed non-blocks, blocks, and non-blocks.
+            Dim off As Integer
+            Dim size As Integer
+            For y = -2 To 3
+                For x = -2 To 3
+                    If mapMaze.mazeBlockFixed(pos.X + x, pos.Y + y) = True Then
+                        off = 12
                     Else
-                        mapEngine.mapByName("debug").value(New Point(2 + x, 2 + y)) = 53 + off
+                        off = 0
                     End If
-                Else
-                    If x < 0 Or x > 1 Or y < 0 Or y > 1 Then
-                        mapEngine.mapByName("debug").value(New Point(2 + x, 2 + y)) = 52 + off
+                    If blockMode = mode.addBlock Or blockMode = mode.deleteBlock Then
+                        size = 1
                     Else
-                        mapEngine.mapByName("debug").value(New Point(2 + x, 2 + y)) = 54 + off
+                        size = 0
                     End If
-                End If
+                    If mapMaze.path(New Point(pos.X + x, pos.Y + y)).pathType = maze.pathType.block Then
+                        If x < 0 Or x > size Or y < 0 Or y > size Then
+                            debugMap.value(New Point(2 + x, 2 + y)) = 51 + off
+                        Else
+                            If mapCursor.animationRange.min = 0 Then
+                                debugMap.value(New Point(2 + x, 2 + y)) = 55 + off
+                            Else
+                                debugMap.value(New Point(2 + x, 2 + y)) = 53 + off
+                            End If
+                        End If
+                    Else
+                        If x < 0 Or x > size Or y < 0 Or y > size Then
+                            debugMap.value(New Point(2 + x, 2 + y)) = 52 + off
+                        Else
+                            If mapCursor.animationRange.min = 0 Then
+                                debugMap.value(New Point(2 + x, 2 + y)) = 56 + off
+                            Else
+                                debugMap.value(New Point(2 + x, 2 + y)) = 54 + off
+                            End If
+                        End If
+                    End If
+                Next
             Next
-        Next
+
+        End If
 
     End Sub
 
     Public Sub mapEngine_geMouseUp(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles mapEngine.geMouseUp
-        ' Handles the action performed on a mouse click.
 
-        Dim pos As Point
+        ' This is the geMouseUp event.
+        ' This is triggered once per frame by the gameEngine and reports button releases on the mouse
 
-        pos = New Point(Int(e.Location.X / (8 * CLIENT_SCALE)), Int(e.Location.Y / (8 * CLIENT_SCALE)))
+        ' Get the current mouse position
+        Dim pos = New Point(Int(e.Location.X / (8 * CLIENT_SCALE)), Int(e.Location.Y / (8 * CLIENT_SCALE)))
 
-        ' Depending upon the mode indicated by the blockMode variable, a different action will be performed.
+        ' Depending upon the mode indicated by the blockMode variable, a different outlining box is shown.
         Select Case blockMode
+
             Case mode.addBlock
-                ' If the user enables add block.
-                ' Performs a check to ensure the tiles within the outlined box are not fixed.
+
+                ' If addBlock mode is active then check whether the tiles under the cursor are fixed
+                ' If they are not then add a block
                 If Not (mapMaze.mazeBlockFixed(pos.X, pos.Y) Or mapMaze.mazeBlockFixed(pos.X + 1, pos.Y) Or mapMaze.mazeBlockFixed(pos.X, pos.Y + 1) Or mapMaze.mazeBlockFixed(pos.X + 1, pos.Y + 1)) Then
-                    ' If true then each of the tiles within the outlined box are set to blocks.
                     mapMaze.mazePathType(pos.X, pos.Y) = maze.pathType.block
                     mapMaze.mazePathType(pos.X + 1, pos.Y) = maze.pathType.block
                     mapMaze.mazePathType(pos.X, pos.Y + 1) = maze.pathType.block
                     mapMaze.mazePathType(pos.X + 1, pos.Y + 1) = maze.pathType.block
                 End If
+
             Case mode.deleteBlock
-                ' If the user enables delete block.
-                ' Performs a check to ensure the tiles within the outlined box are not fixed.
-                If Not (mapMaze.mazeBlockFixed(pos.X, pos.Y) Or mapMaze.mazeBlockFixed(pos.X + 1, pos.Y) Or mapMaze.mazeBlockFixed(pos.X, pos.Y + 1) Or mapMaze.mazeBlockFixed(pos.X + 1, pos.Y + 1)) Then
-                    ' Performs a check to ensure that once the current block is deleted no single or unconnected tiles are left.
 
-                    For y = 1 To 28
-                        For x = 1 To 26
-                            If (x = pos.X And y = pos.Y) Then
-                                If ((x > 2 And x < 25) And (y > 2 And y < 27)) Then
-                                    If (mapMaze.mazePathType(x, y - 1) = maze.pathType.block And mapMaze.mazePathType(x, y - 2) <> maze.pathType.block) Or
-                            (mapMaze.mazePathType(x + 1, y - 1) = maze.pathType.block And mapMaze.mazePathType(x + 1, y - 2) <> maze.pathType.block) Or
-                            (mapMaze.mazePathType(x, y + 2) = maze.pathType.block And mapMaze.mazePathType(x, y + 3) <> maze.pathType.block) Or
-                            (mapMaze.mazePathType(x + 1, y + 2) = maze.pathType.block And mapMaze.mazePathType(x + 1, y + 3) <> maze.pathType.block) Or
-                            (mapMaze.mazePathType(x + 2, y) = maze.pathType.block And mapMaze.mazePathType(x + 3, y) <> maze.pathType.block) Or
-                            (mapMaze.mazePathType(x + 2, y + 1) = maze.pathType.block And mapMaze.mazePathType(x + 3, y + 1) <> maze.pathType.block) Or
-                            (mapMaze.mazePathType(x - 1, y) = maze.pathType.block And mapMaze.mazePathType(x - 2, y) <> maze.pathType.block) Or
-                            (mapMaze.mazePathType(x - 1, y + 1) = maze.pathType.block And mapMaze.mazePathType(x - 2, y + 1) <> maze.pathType.block) Then
-
-                                    Else
-                                        alterOutlinedTiles(x, y)
-                                    End If
-                                Else
-
-                                    If ((mapMaze.mazeBlockFixed(x - 1, y - 1) = True) And (mapMaze.mazeBlockFixed(x - 1, y) = True) And (mapMaze.mazeBlockFixed(x + 1, y - 1) = True) And (mapMaze.mazeBlockFixed(x, y - 1) = True) And (mapMaze.mazeBlockFixed(x - 1, y + 1) = True) Or
-                                        (mapMaze.mazeBlockFixed(x + 2, y + 2) = True) And (mapMaze.mazeBlockFixed(x + 2, y) = True) And (mapMaze.mazeBlockFixed(x + 2, y + 1) = True) And (mapMaze.mazeBlockFixed(x, y + 2) = True) And (mapMaze.mazeBlockFixed(x + 1, y + 2) = True) Or
-                                        (mapMaze.mazeBlockFixed(x, y - 1) = True) And (mapMaze.mazeBlockFixed(x + 1, y - 1) = True) And (mapMaze.mazeBlockFixed(x + 2, y - 1) = True) And (mapMaze.mazeBlockFixed(x + 2, y) = True) And (mapMaze.mazeBlockFixed(x + 2, y + 1) = True) Or
-                                        (mapMaze.mazeBlockFixed(x - 1, y) = True) And (mapMaze.mazeBlockFixed(x - 1, y + 1) = True) And (mapMaze.mazeBlockFixed(x - 1, y + 2) = True) And (mapMaze.mazeBlockFixed(x, y + 2) = True) And (mapMaze.mazeBlockFixed(x + 1, y + 2) = True) Or
-                                        (mapMaze.mazeBlockFixed(x - 1, y - 1) = True) And (mapMaze.mazeBlockFixed(x, y - 1) = True) And (mapMaze.mazeBlockFixed(x + 1, y - 1) = True) And (mapMaze.mazeBlockFixed(x + 2, y - 1) = True) Or
-                                        (mapMaze.mazeBlockFixed(x - 1, y + 2) = True) And (mapMaze.mazeBlockFixed(x, y + 2) = True) And (mapMaze.mazeBlockFixed(x + 1, y + 2) = True) And (mapMaze.mazeBlockFixed(x + 2, y + 2) = True) Or
-                                        (mapMaze.mazeBlockFixed(x - 1, y - 1) = True) And (mapMaze.mazeBlockFixed(x - 1, y) = True) And (mapMaze.mazeBlockFixed(x - 1, y + 1) = True) And (mapMaze.mazeBlockFixed(x - 1, y + 2) = True) Or
-                                        (mapMaze.mazeBlockFixed(x + 2, y - 1) = True) And (mapMaze.mazeBlockFixed(x + 2, y) = True) And (mapMaze.mazeBlockFixed(x + 2, y + 1) = True) And (mapMaze.mazeBlockFixed(x + 2, y + 2) = True)) Then
-
-                                        alterOutlinedTiles(x, y)
-
-                                        If (mapMaze.mazePathType(x + 2, y) = maze.pathType.block And mapMaze.mazeBlockFixed(x + 2, y) = False) And mapMaze.mazePathType(x + 3, y) <> maze.pathType.block Then
-                                            If mapMaze.data(New Point(x + 2, y)) = maze.mazeObjects.blank Then
-                                                mapMaze.mazePathType(x + 2, y) = maze.pathType.blank
-                                            Else
-                                                mapMaze.mazePathType(x + 2, y) = maze.pathType.dot
-                                            End If
-                                            If mapMaze.data(New Point(x + 2, y + 1)) = maze.mazeObjects.blank Then
-                                                mapMaze.mazePathType(x + 2, y + 1) = maze.pathType.blank
-                                            Else
-                                                mapMaze.mazePathType(x + 2, y + 1) = maze.pathType.dot
-                                            End If
-                                        End If
-                                        If (mapMaze.mazePathType(x - 1, y) = maze.pathType.block And mapMaze.mazeBlockFixed(x - 1, y) = False) And mapMaze.mazePathType(x - 2, y) <> maze.pathType.block Then
-                                            If mapMaze.data(New Point(x - 1, y)) = maze.mazeObjects.blank Then
-                                                mapMaze.mazePathType(x - 1, y) = maze.pathType.blank
-                                            Else
-                                                mapMaze.mazePathType(x - 1, y) = maze.pathType.dot
-                                            End If
-                                            If mapMaze.data(New Point(x - 1, y + 1)) = maze.mazeObjects.blank Then
-                                                mapMaze.mazePathType(x - 1, y + 1) = maze.pathType.blank
-                                            Else
-                                                mapMaze.mazePathType(x - 1, y + 1) = maze.pathType.dot
-                                            End If
-                                        End If
-                                    End If
-                                End If
-                            End If
-                        Next
-                    Next
+                ' If deleteBlock mode is active then check whether deletion is allowed at this position
+                ' If it is then delete the block by replacing with dots
+                If checkDelete(pos.X, pos.Y) = True Then
+                    mapMaze.mazePathType(pos.X, pos.Y) = maze.pathType.dot
+                    mapMaze.mazePathType(pos.X + 1, pos.Y) = maze.pathType.dot
+                    mapMaze.mazePathType(pos.X, pos.Y + 1) = maze.pathType.dot
+                    mapMaze.mazePathType(pos.X + 1, pos.Y + 1) = maze.pathType.dot
                 End If
+
             Case mode.addEnergizer
-                ' If the user enables add energizer.
-                ' Performs a check to ensure that the block the user would like to place the energizer in does not contain a block and is fixed.
+
+                ' If addEnergizer mode is active then check whether the tile under the cursor is fixed or a block
+                ' If is is not then add an energizer
                 If mapMaze.mazePathType(pos.X, pos.Y) <> maze.pathType.block And mapMaze.mazeBlockFixed(pos.X, pos.Y) = False Then
-                    ' If so an enetgizer is placed in the current block.
                     mapMaze.mazePathType(pos.X, pos.Y) = maze.pathType.energizer
                 End If
+
             Case mode.addDot
-                ' If the user enables add dot.
-                ' Performs a check to ensure that the block the user would like to place the dot in does not contain a block and is not fixed.
+
+                ' If addDot mode is active then check whether the tile under the cursor is fixed or a block
+                ' If is is not then add a dot
                 If mapMaze.mazePathType(pos.X, pos.Y) <> maze.pathType.block And mapMaze.mazeBlockFixed(pos.X, pos.Y) = False Then
-                    ' If so a dot is placed in the current block.
                     mapMaze.mazePathType(pos.X, pos.Y) = maze.pathType.dot
                 End If
+
             Case mode.deleteDot
-                ' If the user enables delete dot.
-                ' Performs a check to ensure that the dot the user would like to delete is in fact a dot and also that it is not fixed.
+
+                ' If deleteDot mode is active then check whether the tile under the cursor is fixed or not a dot
+                ' If is is not then add a blank
                 If mapMaze.mazePathType(pos.X, pos.Y) = maze.pathType.dot And mapMaze.mazeBlockFixed(pos.X, pos.Y) = False Then
-                    ' If so the dot is turned into a blank.
                     mapMaze.mazePathType(pos.X, pos.Y) = maze.pathType.blank
                 End If
+
             Case mode.deleteEnergizer
-                ' If the uesr enables delete energizer.
-                ' Performs a check to ensure that the energizer the user would like to delete is in fact an energizer and also that it is not fixed.
+
+                ' If deleteEnergizer mode is active then check whether the tile under the cursor is fixed or a not an energizer
+                ' If is is then add a blank
                 If mapMaze.mazePathType(pos.X, pos.Y) = maze.pathType.energizer And mapMaze.mazeBlockFixed(pos.X, pos.Y) = False Then
-                    ' If so the energizer is turned into a blank.
                     mapMaze.mazePathType(pos.X, pos.Y) = maze.pathType.blank
                 End If
 
         End Select
 
+        ' Copy the changes made to the maze into the gameEngine
         copyGameEngineMaze()
 
     End Sub
 
     Private Sub copyGameEngineMaze()
 
+        ' Convert maze data into path data
         mapMaze.pathToData()
 
-        ' Actually displays the maze. 
-        ' Each time an action is performed the map engine map is updated.
+        ' Copy each element within the mapMaze into the gameEngine
         For y = 0 To 30
             For x = 0 To 27
                 mapEngine.mapByName("main").value(New Point(x, y)) = mapMaze.data(New Point(x, y))
@@ -330,18 +287,21 @@ Public Class MJ_MapEditor
         Me.ClientSize = New Size((CLIENT_WIDTH * CLIENT_SCALE), CLIENT_HEIGHT * CLIENT_SCALE)
         Me.BackColor = Color.Black
 
+        ' Toolstrip defaults to rounded corners, so turn them off as it doesn't look great
+        If TypeOf ToolStrip1.Renderer Is ToolStripProfessionalRenderer Then
+            CType(ToolStrip1.Renderer, ToolStripProfessionalRenderer).RoundedEdges = False
+        End If
+
         ' Creates a new instance of the game engine.
-        mapEngine = New gameEngine(Me, CLIENT_WIDTH, CLIENT_HEIGHT - 40, CLIENT_SCALE, ToolStrip1.Height)
+        mapEngine = New gameEngine(Me, CLIENT_WIDTH, CLIENT_HEIGHT - 40, CLIENT_SCALE, ToolStrip1.Height + MenuStrip1.Height)
 
         ' Adds a new tileset of size 8 x 8.
         mapEngine.addTile("defaultMaze", New Size(8, 8))
         ' Intitalizes the map varialbe to use the defaul maze tileset and initializes the size.
         map = mapEngine.addMap("main", mapEngine.tileIndexByName("defaultMaze"), New Size(32, 40))
 
-        ' Adds a new tileset of size 8 x 8.
-        mapEngine.addTile("mapEditor", New Size(8, 8))
         ' This tileset is used for debugging purposes.
-        debugMap = mapEngine.addMap("debug", mapEngine.tileIndexByName("mapEditor"), New Size(6, 6))    ' DEBUG
+        debugMap = mapEngine.addMap("debug", mapEngine.tileIndexByName("defaultMaze"), New Size(6, 6))    ' DEBUG
         ' Intitalizes the positioin of the debugger.
         debugMap.point = New Point(88, 94)
 
@@ -370,14 +330,14 @@ Public Class MJ_MapEditor
 
     End Sub
 
-    Private Sub MJ_mapEditor_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
+    Private Sub mapEditor_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
 
+        ' The form is closing so end the mapEngine
         mapEngine.endEngine()
 
     End Sub
 
     Private Sub toolStripBlock_Click(sender As Object, e As EventArgs) Handles toolStripBlock.Click
-        ' Handles the creation of the buttons and the event of clicking the add block button.
 
         If blockMode <> mode.addBlock And blockMode <> mode.deleteBlock Then
             toolStripBlock.Image = iconImage.Images(1)
@@ -408,7 +368,6 @@ Public Class MJ_MapEditor
     End Sub
 
     Private Sub toolStripDot_Click(sender As Object, e As EventArgs) Handles toolStripDot.Click
-        ' Handles the creation of the buttons and the event of clicking the add dot button. 
 
         If blockMode <> mode.addDot And blockMode <> mode.deleteBlock Then
             toolStripBlock.Image = iconImage.Images(0)
@@ -439,7 +398,6 @@ Public Class MJ_MapEditor
     End Sub
 
     Private Sub toolStripEnergizer_Click(sender As Object, e As EventArgs) Handles toolStripEnergizer.Click
-        ' Handles the creation of the buttons and the event of clicking the add energizer button.
 
         If blockMode <> mode.addEnergizer And blockMode <> mode.deleteEnergizer Then
             toolStripBlock.Image = iconImage.Images(0)
@@ -469,8 +427,61 @@ Public Class MJ_MapEditor
 
     End Sub
 
-    Private Sub toolStripReset_Click(sender As Object, e As EventArgs) Handles toolStripReset.Click
-        ' Handles the creation of the button and the event of clicking the reset button.
+    Private Function checkDelete(curX As Integer, curY As Integer) As Boolean
+
+        If mapMaze.mazeBlockFixed(curX, curY) = True Or
+            mapMaze.mazeBlockFixed(curX + 1, curY) = True Or
+            mapMaze.mazeBlockFixed(curX, curY + 1) = True Or
+            mapMaze.mazeBlockFixed(curX + 1, curY + 1) = True Then
+            Return False
+        End If
+
+        ' Iterate through all the maze elements
+        For y = 0 To 29
+            For x = 0 To 27
+
+                ' Copy the maze to the temporary maze and simulate the deletion of the block
+                ' at the current cursor position
+                If ((x = curX And y = curY) Or (x = curX + 1 And y = curY) Or (x = curX And y = curY + 1) Or (x = curX + 1 And y = curY + 1)) Then
+                    mapMazeDelete.mazePathType(x, y) = maze.pathType.dot
+                Else
+                    mapMazeDelete.mazePathType(x, y) = mapMaze.mazePathType(x, y)
+                End If
+
+            Next
+        Next y
+
+        ' Iterate through all the maze elements and check for invalid blocks
+        ' As soon as one if found exit the function with a false flag to indicate that
+        ' removing the block results in an invalid maze state
+        For y = 1 To 28
+            For x = 1 To 26
+
+                If mapMazeDelete.mazePathType(x, y) = maze.pathType.block Then
+                    If mapMazeDelete.mazePathType(x - 1, y) = maze.pathType.block And mapMazeDelete.mazePathType(x, y - 1) = maze.pathType.block And mapMazeDelete.mazePathType(x - 1, y - 1) = maze.pathType.block Then
+                    Else
+                        If mapMazeDelete.mazePathType(x + 1, y) = maze.pathType.block And mapMazeDelete.mazePathType(x, y - 1) = maze.pathType.block And mapMazeDelete.mazePathType(x + 1, y - 1) = maze.pathType.block Then
+                        Else
+                            If mapMazeDelete.mazePathType(x - 1, y) = maze.pathType.block And mapMazeDelete.mazePathType(x, y + 1) = maze.pathType.block And mapMazeDelete.mazePathType(x - 1, y + 1) = maze.pathType.block Then
+                            Else
+                                If mapMazeDelete.mazePathType(x + 1, y) = maze.pathType.block And mapMazeDelete.mazePathType(x, y + 1) = maze.pathType.block And mapMazeDelete.mazePathType(x + 1, y + 1) = maze.pathType.block Then
+                                Else
+                                    Return False
+                                End If
+                            End If
+                        End If
+                    End If
+                End If
+
+            Next x
+        Next y
+
+        ' All block are valid so exit the function and return true to indicate a valid maze state
+        Return True
+
+    End Function
+
+    Private Sub ResetMazeToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ToolStrip_ResetMaze.Click
 
         Dim reply As DialogResult
 
@@ -493,60 +504,9 @@ Public Class MJ_MapEditor
 
     End Sub
 
-    Public Sub alterOutlinedTiles(x As Integer, y As Integer)
-        If mapMaze.data(New Point(x, y)) = maze.mazeObjects.blank Then
-            mapMaze.mazePathType(x, y) = maze.pathType.blank
-        Else
-            mapMaze.mazePathType(x, y) = maze.pathType.dot
-        End If
-        If mapMaze.data(New Point(x + 1, y)) = maze.mazeObjects.blank Then
-            mapMaze.mazePathType(x + 1, y) = maze.pathType.blank
-        Else
-            mapMaze.mazePathType(x + 1, y) = maze.pathType.dot
-        End If
-        If mapMaze.data(New Point(x, y + 1)) = maze.mazeObjects.blank Then
-            mapMaze.mazePathType(x, y + 1) = maze.pathType.blank
-        Else
-            mapMaze.mazePathType(x, y + 1) = maze.pathType.dot
-        End If
-        If mapMaze.data(New Point(x + 1, y + 1)) = maze.mazeObjects.blank Then
-            mapMaze.mazePathType(x + 1, y + 1) = maze.pathType.blank
-        Else
-            mapMaze.mazePathType(x + 1, y + 1) = maze.pathType.dot
-        End If
-    End Sub
-
-    Private Sub toolStripSave_Click(sender As Object, e As EventArgs) Handles toolStripSave.Click
-        ' Handles the creation of the button and the event of clicking the save button.
+    Private Sub ToolStrip_LoadMaze_Click(sender As Object, e As EventArgs) Handles ToolStrip_LoadMaze.Click
 
         Dim fd As FileDialog
-        Dim stream As FileStream
-
-        fd = New SaveFileDialog
-
-        fd.Title = "Save Pacman Maze"
-        fd.Filter = "Pacman Mazes (*.pac)|*.pac"
-        fd.FilterIndex = 1
-        fd.RestoreDirectory = True
-
-        If fd.ShowDialog() = DialogResult.OK Then
-            stream = New FileStream(fd.FileName, FileMode.Create)
-
-            For y = 0 To 30
-                For x = 0 To 27
-                    stream.WriteByte(mapMaze.mazePathType(x, y))
-                Next
-            Next
-            stream.Close()
-        End If
-
-    End Sub
-
-    Private Sub toolStripLoad_Click(sender As Object, e As EventArgs) Handles toolStripLoad.Click
-        ' Handles the creation of the button and the event of clicking the load button.
-
-        Dim fd As FileDialog
-        Dim stream As FileStream
 
         fd = New OpenFileDialog
 
@@ -556,28 +516,57 @@ Public Class MJ_MapEditor
         fd.RestoreDirectory = True
 
         If fd.ShowDialog() = DialogResult.OK Then
-            stream = New FileStream(fd.FileName, FileMode.Open)
 
-            Dim fileName As String = fd.FileName
+            mapMaze.loadMaze(fd.FileName)
+            copyGameEngineMaze()
 
-            For y = 0 To 30
-                For x = 0 To 27
-                    mapMaze.mazePathType(x, y) = stream.ReadByte()
-                Next
-            Next
-
-            stream.Close()
         End If
 
     End Sub
 
-    Private Sub toolStripInfo_Click(sender As Object, e As EventArgs) Handles toolStripInfo.Click
+    Private Sub ToolStrip_SaveMaze_Click(sender As Object, e As EventArgs) Handles ToolStrip_SaveMaze.Click
 
-        MsgBox("To use the map editor simply select the object you would like to place from the tool strip and place using the mouse." & vbNewLine &
-               "A red outlined box will indicate where objects cannot be placed, whereas a green outlined box will indicate where objects can be placed." & vbNewLine &
-               "To delete objects, simply, select the objects icon again until the delete sign appears on the icon." & vbNewLine &
-               "The same rules apply for what you can and cannot delete, a green box means you can and a red box means you cannot delete the object.", MsgBoxStyle.Information, "Map Editor Instructions")
+        Dim fd As FileDialog
+
+        fd = New SaveFileDialog
+
+        fd.Title = "Save Pacman Maze"
+        fd.Filter = "Pacman Mazes (*.pac)|*.pac"
+        fd.FilterIndex = 1
+        fd.RestoreDirectory = True
+
+        If fd.ShowDialog() = DialogResult.OK Then
+
+            mapMaze.saveMaze(fd.FileName)
+
+        End If
 
     End Sub
 
+    Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
+
+        Me.Close()
+
+    End Sub
+
+    Private Sub ToolStrip_Debug_Click(sender As Object, e As EventArgs) Handles ToolStrip_Debug.Click
+
+        If ToolStrip_Debug.Checked = True Then
+            ToolStrip_Debug.Checked = False
+            debugMap.enabled = False
+            copyGameEngineMaze()
+        Else
+            ToolStrip_Debug.Checked = True
+            debugMap.enabled = True
+        End If
+
+    End Sub
+
+    Private Sub ToolStrip_EditorInstructions_Click(sender As Object, e As EventArgs) Handles ToolStrip_EditorInstructions.Click
+
+        mapEngine.endEngine()
+        MazeEditorInstructions.ShowDialog()
+        mapEngine.startEngine()
+
+    End Sub
 End Class

@@ -1,7 +1,10 @@
 ﻿
+' Actor Class
+' This handles Pac-Man, the Ghosts and the Fruit
 
 Public Class actor
 
+    ' Enumerate actor directions
     Public Enum actorDirection As Integer
         None = 0
         Up = 1
@@ -10,6 +13,7 @@ Public Class actor
         Right = 4
     End Enum
 
+    ' Enumerate ghost modes
     Public Enum ghostMode As Integer
         ghostOutside = 0
         ghostEaten = 1
@@ -20,24 +24,32 @@ Public Class actor
         ghostStart = 6
     End Enum
 
+    ' Enumerate ghost state
     Public Enum ghostState As Integer
         Scatter = 0
         Chase = 1
     End Enum
 
+    ' Enumerate release modes
     Public Enum releaserMode
         modePersonal = 0
         modeGlobal = 1
     End Enum
 
+    ' Actors are stored internally as lists
+    ' Initialize the lists for ghosts, Pac-Man and the fruit
     Private Shared _ghost As New List(Of ghost)
     Private Shared _pacman As New List(Of pacman)
     Private Shared _fruit As New List(Of fruit)
 
+    ' Initialize the ghost state and default it to "Chase"
     Private Shared _ghostState As ghostState = ghostState.Chase
 
+    ' Create a new ghost releaser
     Public ghostReleaser As New releaser
 
+    ' The step size structure holds information related to the speed of the actors
+    ' when they are in different states
     Private Structure stepSizeData
         Public pacmanNormal As String
         Public ghostsNormal As String
@@ -49,21 +61,26 @@ Public Class actor
         Public elroy2 As String
     End Structure
 
+    ' Step size and step counter
     Private Shared _stepSize As stepSizeData
     Private Shared _stepCounter As Integer
+
+    ' Internal level counter
     Private Shared _level As Integer
 
+    ' Energize and energize flash time in frames. One element per level
     Private Shared _energizeTime() = {6, 5, 4, 3, 2, 5, 2, 2, 1, 5, 2, 1, 1, 3, 1, 1, 0, 1}
     Private Shared _energizeFlashTime() = {5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 3, 3, 5, 3, 3, 0, 3}
 
+    ' Current energized timer, energized flash timer, and energized score
     Private _energizedTimer As Integer
     Private _energizedFlashTimer As Integer
     Private _energizedScore As Integer
 
+    ' Nothing to initilize at the actor class level
     Public Sub New()
 
     End Sub
-
 
     ' =============================================================================================================================
     '
@@ -80,6 +97,7 @@ Public Class actor
         Private _tick As Integer
         Private _points As Integer
         Private _eaten As Boolean
+        Private _eatenTick As Integer
         Private _list As String
 
         ' -----------------------------------------------------------------------------------------------------------------------------
@@ -188,6 +206,19 @@ Public Class actor
             End Get
             Set(value As Boolean)
                 _eaten = value
+            End Set
+        End Property
+
+        ' -----------------------------------------------------------------------------------------------------------------------------
+        ' actor.fruit.eatenTick() as integer
+        ' -----------------------------------------------------------------------------------------------------------------------------
+
+        Public Property eatenTick As Integer
+            Get
+                eatenTick = _eatenTick
+            End Get
+            Set(value As Integer)
+                _eatenTick = value
             End Set
         End Property
 
@@ -904,91 +935,7 @@ Public Class actor
 
     ' =============================================================================================================================
     '
-    ' actor Class
-    '
-    ' =============================================================================================================================
-
-    ' -----------------------------------------------------------------------------------------------------------------------------
-    ' actor.addGhost(n as String)
-    ' -----------------------------------------------------------------------------------------------------------------------------
-
-    Public Sub addGhost(name As String, startPixel As Point, cornerTile As Point, startDirection As actor.actorDirection, startMode As actor.ghostMode, arriveHomeMode As actor.ghostMode)
-
-        Dim gh As New ghost
-
-        gh.name = name
-        gh.mode = ghostMode.ghostPacingHome
-        gh.pixel = startPixel
-        gh.direction = startDirection
-        gh.nextDirection = startDirection
-        gh.signalReverse = False
-        gh.signalLeaveHome = False
-        gh.scared = False
-        gh.flashing = False
-        gh.targetting = False
-        gh.startPixel = startPixel
-        gh.cornerTile = cornerTile
-        gh.startDirection = startDirection
-        gh.startMode = startMode
-        gh.arriveHomeMode = arriveHomeMode
-        gh.personalDotLimit = 0
-        gh.globalDotLimit = 0
-        gh.dotsCounter = 0
-        gh.eatenPixel = New Point(0, 0)
-        gh.eatenTimer = 0
-
-        _ghost.Add(gh)
-
-    End Sub
-
-    ' -----------------------------------------------------------------------------------------------------------------------------
-    ' actor.ghostByName(name as String) as ghost
-    ' -----------------------------------------------------------------------------------------------------------------------------
-
-    Public Function ghostByName(name As String) As ghost
-
-        Dim index
-        index = _ghost.FindIndex((Function(f) f.name = name))
-        Return _ghost(index)
-
-    End Function
-
-    ' -----------------------------------------------------------------------------------------------------------------------------
-    ' actor.ghostByIndex(index as integer) as ghost
-    ' -----------------------------------------------------------------------------------------------------------------------------
-
-    Public Function ghostByIndex(index As Integer) As ghost
-
-        Return _ghost(index)
-
-    End Function
-
-    ' -----------------------------------------------------------------------------------------------------------------------------
-    ' actor.ghostIndexByName(name as String) as integer
-    ' -----------------------------------------------------------------------------------------------------------------------------
-
-    Public Function ghostIndexByName(name As String) As Integer
-
-        Return _ghost.FindIndex((Function(f) f.name = name))
-
-    End Function
-
-    ' -----------------------------------------------------------------------------------------------------------------------------
-    ' actor.setGhostState() as ghostState
-    ' -----------------------------------------------------------------------------------------------------------------------------
-
-    Public Property state As ghostState
-        Get
-            state = _ghostState
-        End Get
-        Set(value As ghostState)
-            _ghostState = value
-        End Set
-    End Property
-
-    ' =============================================================================================================================
-    '
-    '  Class
+    ' Releaser Class
     '
     ' =============================================================================================================================
 
@@ -1087,8 +1034,8 @@ Public Class actor
 
                     _stepSize.pacmanNormal = "1111211111112111"
                     _stepSize.ghostsNormal = "1111211112111121"
-                    _stepSize.pacmanFright = "0000000000000000"
-                    _stepSize.ghostsFright = "0000000000000000"
+                    _stepSize.pacmanFright = "1121112111211121"
+                    _stepSize.ghostsFright = "0111011101110111"
                     _stepSize.ghostsTunnel = "0110110101101101"
                     _stepSize.ghostsPacing = "0101010101010101"
                     _stepSize.elroy1 = "1121112111211121"
@@ -1209,6 +1156,90 @@ Public Class actor
 
     End Class
 
+    ' =============================================================================================================================
+    '
+    ' actor Class
+    '
+    ' =============================================================================================================================
+
+    ' -----------------------------------------------------------------------------------------------------------------------------
+    ' actor.addGhost
+    ' -----------------------------------------------------------------------------------------------------------------------------
+
+    Public Sub addGhost(name As String, startPixel As Point, cornerTile As Point, startDirection As actor.actorDirection, startMode As actor.ghostMode, arriveHomeMode As actor.ghostMode)
+
+        Dim gh As New ghost
+
+        gh.name = name
+        gh.mode = ghostMode.ghostPacingHome
+        gh.pixel = startPixel
+        gh.direction = startDirection
+        gh.nextDirection = startDirection
+        gh.signalReverse = False
+        gh.signalLeaveHome = False
+        gh.scared = False
+        gh.flashing = False
+        gh.targetting = False
+        gh.startPixel = startPixel
+        gh.cornerTile = cornerTile
+        gh.startDirection = startDirection
+        gh.startMode = startMode
+        gh.arriveHomeMode = arriveHomeMode
+        gh.personalDotLimit = 0
+        gh.globalDotLimit = 0
+        gh.dotsCounter = 0
+        gh.eatenPixel = New Point(0, 0)
+        gh.eatenTimer = 0
+
+        _ghost.Add(gh)
+
+    End Sub
+
+    ' -----------------------------------------------------------------------------------------------------------------------------
+    ' actor.ghostByName(name as String) as ghost
+    ' -----------------------------------------------------------------------------------------------------------------------------
+
+    Public Function ghostByName(name As String) As ghost
+
+        Dim index
+        index = _ghost.FindIndex((Function(f) f.name = name))
+        Return _ghost(index)
+
+    End Function
+
+    ' -----------------------------------------------------------------------------------------------------------------------------
+    ' actor.ghostByIndex(index as integer) as ghost
+    ' -----------------------------------------------------------------------------------------------------------------------------
+
+    Public Function ghostByIndex(index As Integer) As ghost
+
+        Return _ghost(index)
+
+    End Function
+
+    ' -----------------------------------------------------------------------------------------------------------------------------
+    ' actor.ghostIndexByName(name as String) as integer
+    ' -----------------------------------------------------------------------------------------------------------------------------
+
+    Public Function ghostIndexByName(name As String) As Integer
+
+        Return _ghost.FindIndex((Function(f) f.name = name))
+
+    End Function
+
+    ' -----------------------------------------------------------------------------------------------------------------------------
+    ' actor.setGhostState() as ghostState
+    ' -----------------------------------------------------------------------------------------------------------------------------
+
+    Public Property state As ghostState
+        Get
+            state = _ghostState
+        End Get
+        Set(value As ghostState)
+            _ghostState = value
+        End Set
+    End Property
+
     ' -----------------------------------------------------------------------------------------------------------------------------
     ' actor.addPacman(n as String)
     ' -----------------------------------------------------------------------------------------------------------------------------
@@ -1307,6 +1338,8 @@ Public Class actor
                 .scaredChanged = True
                 .flashingChanged = True
 
+                .targetTile = .cornerTile
+
             End With
         Next
 
@@ -1391,11 +1424,11 @@ Public Class actor
     ' actor.update(ByRef as maze)
     ' -----------------------------------------------------------------------------------------------------------------------------
 
-    Public Sub update(ByRef maze As maze)
+    Public Sub update(ByRef maze As maze, invincible As Boolean)
 
         For f = 1 To 2
-            updateGhost(maze, f)
-            updatePacman(maze, f)
+            updateGhost(maze, f, invincible)
+            updatePacman(maze, f, invincible)
         Next
 
         ghostReleaser.update()
@@ -1427,7 +1460,7 @@ Public Class actor
     ' actor.updateGhost(ByRef as maze)
     ' -----------------------------------------------------------------------------------------------------------------------------
 
-    Public Sub updateGhost(ByRef maze As maze, f As Integer)
+    Public Sub updateGhost(ByRef maze As maze, f As Integer, invincible As Boolean)
 
         Dim steps As Integer
 
@@ -1720,11 +1753,14 @@ Public Class actor
                         End If
                     End If
 
-                    For i = 0 To _pacman.Count - 1
-                        If .tile = _pacman(i).tile Then
-                            collision(i, n)
-                        End If
-                    Next
+                    If Not invincible Then
+                        For i = 0 To _pacman.Count - 1
+                            If .tile = _pacman(i).tile Then
+                                collision(i, n)
+                            End If
+                        Next
+                    End If
+
 
                 End If
 
@@ -1738,7 +1774,7 @@ Public Class actor
     ' actor.updatePacman(ByRef as maze)
     ' -----------------------------------------------------------------------------------------------------------------------------
 
-    Public Sub updatePacman(ByRef maze As maze, f As Integer)
+    Public Sub updatePacman(ByRef maze As maze, f As Integer, invincible As Boolean)
 
         Dim steps As Integer
 
@@ -1871,17 +1907,21 @@ Public Class actor
                     End If
                 End If
 
-                For i = 0 To _ghost.Count - 1
-                    If .tile = _ghost(i).tile Then
-                        collision(n, i)
-                    End If
-                Next
+                If Not invincible Then
+                    For i = 0 To _ghost.Count - 1
+                        If .tile = _ghost(i).tile Then
+                            collision(n, i)
+                        End If
+                    Next
+                End If
 
+                ' If Pac-Man has eaten a fruit...
                 For i = 0 To _fruit.Count - 1
                     If _fruit(i).active Then
                         If .tile = _fruit(i).tile Then
-                            _fruit(i).active = False
                             _fruit(i).eaten = True
+                            _fruit(i).eatenTick = (3 * 60)
+                            _fruit(i).active = False
                         End If
                     End If
                 Next
@@ -2042,7 +2082,7 @@ Public Class actor
     ' -----------------------------------------------------------------------------------------------------------------------------
 
     Public Sub energize()
-        If _level < 18 Then
+        If _level < 19 Then
             _energizedFlashTimer = _energizeFlashTime(_level - 1) * 14 * 2
             _energizedTimer = (_energizeTime(_level - 1) * 60) + _energizedFlashTimer
         Else
@@ -2073,11 +2113,16 @@ Public Class actor
         fr.active = False
         fr.tick = 0
         fr.eaten = False
+        fr.eatenTick = 0
         fr.list = ""
 
         _fruit.Add(fr)
 
     End Sub
+
+    ' -----------------------------------------------------------------------------------------------------------------------------
+    ' actor.resetFruit()
+    ' -----------------------------------------------------------------------------------------------------------------------------
 
     Public Sub resetFruit()
 
@@ -2106,21 +2151,37 @@ Public Class actor
                     End If
                 Next
 
+                .active = False
+                .tick = 0
+                .eatenTick = 0
+
             End With
         Next
 
     End Sub
+
+    ' -----------------------------------------------------------------------------------------------------------------------------
+    ' actor.updateFruit()
+    ' -----------------------------------------------------------------------------------------------------------------------------
 
     Public Sub updateFruit()
 
         For n = 0 To _fruit.Count - 1
             With _fruit(n)
                 If .active Then
+
                     If .tick > 0 Then
                         .tick -= 1
                     Else
                         .active = False
                     End If
+
+                Else
+
+                    If .eatenTick > 0 Then
+                        .eatenTick -= 1
+                    End If
+
                 End If
             End With
         Next
@@ -2139,7 +2200,7 @@ Public Class actor
 
     End Function
 
-    Public Shared Event pacmanChanged(n As Integer)
-    Public Shared Event ghostChanged(n As Integer)
+    'Public Shared Event pacmanChanged(n As Integer)
+    'Public Shared Event ghostChanged(n As Integer)
 
 End Class

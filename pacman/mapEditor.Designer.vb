@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class MJ_MapEditor
+Partial Class MapEditor
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -23,27 +23,34 @@ Partial Class MJ_MapEditor
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MJ_MapEditor))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MapEditor))
         Me.ToolStrip1 = New System.Windows.Forms.ToolStrip()
         Me.toolStripBlock = New System.Windows.Forms.ToolStripButton()
         Me.toolStripDot = New System.Windows.Forms.ToolStripButton()
         Me.toolStripEnergizer = New System.Windows.Forms.ToolStripButton()
-        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
-        Me.toolStripReset = New System.Windows.Forms.ToolStripButton()
-        Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
-        Me.toolStripSave = New System.Windows.Forms.ToolStripButton()
-        Me.toolStripLoad = New System.Windows.Forms.ToolStripButton()
-        Me.toolStripInfo = New System.Windows.Forms.ToolStripButton()
         Me.iconImage = New System.Windows.Forms.ImageList(Me.components)
+        Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
+        Me.FileToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.HelpToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStrip_EditorInstructions = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStrip_ResetMaze = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ToolStrip_LoadMaze = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStrip_SaveMaze = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
+        Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.SettingsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStrip_Debug = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStrip1.SuspendLayout()
+        Me.MenuStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
         'ToolStrip1
         '
         Me.ToolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
         Me.ToolStrip1.ImageScalingSize = New System.Drawing.Size(40, 40)
-        Me.ToolStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.toolStripBlock, Me.toolStripDot, Me.toolStripEnergizer, Me.ToolStripSeparator1, Me.toolStripReset, Me.ToolStripSeparator2, Me.toolStripSave, Me.toolStripLoad, Me.toolStripInfo})
-        Me.ToolStrip1.Location = New System.Drawing.Point(0, 0)
+        Me.ToolStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.toolStripBlock, Me.toolStripDot, Me.toolStripEnergizer})
+        Me.ToolStrip1.Location = New System.Drawing.Point(0, 24)
         Me.ToolStrip1.Name = "ToolStrip1"
         Me.ToolStrip1.Size = New System.Drawing.Size(359, 47)
         Me.ToolStrip1.TabIndex = 0
@@ -80,56 +87,6 @@ Partial Class MJ_MapEditor
         Me.toolStripEnergizer.Text = "ToolStripButton3"
         Me.toolStripEnergizer.ToolTipText = "Add Energizer"
         '
-        'ToolStripSeparator1
-        '
-        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(6, 47)
-        '
-        'toolStripReset
-        '
-        Me.toolStripReset.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.toolStripReset.Image = CType(resources.GetObject("toolStripReset.Image"), System.Drawing.Image)
-        Me.toolStripReset.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.toolStripReset.Name = "toolStripReset"
-        Me.toolStripReset.Size = New System.Drawing.Size(44, 44)
-        Me.toolStripReset.Text = "ToolStripButton1"
-        Me.toolStripReset.ToolTipText = "Reset Maze"
-        '
-        'ToolStripSeparator2
-        '
-        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(6, 47)
-        '
-        'toolStripSave
-        '
-        Me.toolStripSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.toolStripSave.Image = CType(resources.GetObject("toolStripSave.Image"), System.Drawing.Image)
-        Me.toolStripSave.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.toolStripSave.Name = "toolStripSave"
-        Me.toolStripSave.Size = New System.Drawing.Size(44, 44)
-        Me.toolStripSave.Text = "ToolStripButton1"
-        Me.toolStripSave.ToolTipText = "Save Maze"
-        '
-        'toolStripLoad
-        '
-        Me.toolStripLoad.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.toolStripLoad.Image = CType(resources.GetObject("toolStripLoad.Image"), System.Drawing.Image)
-        Me.toolStripLoad.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.toolStripLoad.Name = "toolStripLoad"
-        Me.toolStripLoad.Size = New System.Drawing.Size(44, 44)
-        Me.toolStripLoad.Text = "ToolStripButton2"
-        Me.toolStripLoad.ToolTipText = "Load Maze"
-        '
-        'toolStripInfo
-        '
-        Me.toolStripInfo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.toolStripInfo.Image = CType(resources.GetObject("toolStripInfo.Image"), System.Drawing.Image)
-        Me.toolStripInfo.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.toolStripInfo.Name = "toolStripInfo"
-        Me.toolStripInfo.Size = New System.Drawing.Size(44, 44)
-        Me.toolStripInfo.Text = "ToolStripButton3"
-        Me.toolStripInfo.ToolTipText = "Map Editor Instructions"
-        '
         'iconImage
         '
         Me.iconImage.ImageStream = CType(resources.GetObject("iconImage.ImageStream"), System.Windows.Forms.ImageListStreamer)
@@ -143,18 +100,97 @@ Partial Class MJ_MapEditor
         Me.iconImage.Images.SetKeyName(6, "iconEnergizerOff.png")
         Me.iconImage.Images.SetKeyName(7, "iconEnergizerAdd.png")
         Me.iconImage.Images.SetKeyName(8, "iconEnergizerDelete.png")
-        Me.iconImage.Images.SetKeyName(9, "iconInfo.png")
         '
-        'MJ_MapEditor
+        'MenuStrip1
+        '
+        Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.SettingsToolStripMenuItem, Me.HelpToolStripMenuItem})
+        Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
+        Me.MenuStrip1.Name = "MenuStrip1"
+        Me.MenuStrip1.Size = New System.Drawing.Size(359, 24)
+        Me.MenuStrip1.TabIndex = 1
+        Me.MenuStrip1.Text = "MenuStrip1"
+        '
+        'FileToolStripMenuItem
+        '
+        Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStrip_ResetMaze, Me.ToolStripMenuItem1, Me.ToolStrip_LoadMaze, Me.ToolStrip_SaveMaze, Me.ToolStripMenuItem2, Me.ExitToolStripMenuItem})
+        Me.FileToolStripMenuItem.Name = "FileToolStripMenuItem"
+        Me.FileToolStripMenuItem.Size = New System.Drawing.Size(37, 20)
+        Me.FileToolStripMenuItem.Text = "File"
+        '
+        'HelpToolStripMenuItem
+        '
+        Me.HelpToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStrip_EditorInstructions})
+        Me.HelpToolStripMenuItem.Name = "HelpToolStripMenuItem"
+        Me.HelpToolStripMenuItem.Size = New System.Drawing.Size(44, 20)
+        Me.HelpToolStripMenuItem.Text = "Help"
+        '
+        'ToolStrip_Instructions
+        '
+        Me.ToolStrip_EditorInstructions.Name = "ToolStrip_EditorInstructions"
+        Me.ToolStrip_EditorInstructions.Size = New System.Drawing.Size(152, 22)
+        Me.ToolStrip_EditorInstructions.Text = "Editor Instructions"
+        '
+        'ToolStrip_ResetMaze
+        '
+        Me.ToolStrip_ResetMaze.Name = "ToolStrip_ResetMaze"
+        Me.ToolStrip_ResetMaze.Size = New System.Drawing.Size(152, 22)
+        Me.ToolStrip_ResetMaze.Text = "Reset Maze"
+        '
+        'ToolStripMenuItem1
+        '
+        Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(149, 6)
+        '
+        'ToolStrip_LoadMaze
+        '
+        Me.ToolStrip_LoadMaze.Name = "ToolStrip_LoadMaze"
+        Me.ToolStrip_LoadMaze.Size = New System.Drawing.Size(152, 22)
+        Me.ToolStrip_LoadMaze.Text = "Load Maze"
+        '
+        'ToolStrip_SaveMaze
+        '
+        Me.ToolStrip_SaveMaze.Name = "ToolStrip_SaveMaze"
+        Me.ToolStrip_SaveMaze.Size = New System.Drawing.Size(152, 22)
+        Me.ToolStrip_SaveMaze.Text = "Save Maze"
+        '
+        'ToolStripMenuItem2
+        '
+        Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
+        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(149, 6)
+        '
+        'ExitToolStripMenuItem
+        '
+        Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
+        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.ExitToolStripMenuItem.Text = "Exit"
+        '
+        'SettingsToolStripMenuItem
+        '
+        Me.SettingsToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStrip_Debug})
+        Me.SettingsToolStripMenuItem.Name = "SettingsToolStripMenuItem"
+        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(61, 20)
+        Me.SettingsToolStripMenuItem.Text = "Settings"
+        '
+        'ToolStrip_Debug
+        '
+        Me.ToolStrip_Debug.Name = "ToolStrip_Debug"
+        Me.ToolStrip_Debug.Size = New System.Drawing.Size(152, 22)
+        Me.ToolStrip_Debug.Text = "Debug"
+        '
+        'MapEditor
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(359, 261)
         Me.Controls.Add(Me.ToolStrip1)
-        Me.Name = "MJ_MapEditor"
-        Me.Text = "MJ_MapEditor"
+        Me.Controls.Add(Me.MenuStrip1)
+        Me.MainMenuStrip = Me.MenuStrip1
+        Me.Name = "MapEditor"
+        Me.Text = "Maze Editor"
         Me.ToolStrip1.ResumeLayout(False)
         Me.ToolStrip1.PerformLayout()
+        Me.MenuStrip1.ResumeLayout(False)
+        Me.MenuStrip1.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -164,10 +200,16 @@ Partial Class MJ_MapEditor
     Friend WithEvents toolStripDot As System.Windows.Forms.ToolStripButton
     Friend WithEvents toolStripEnergizer As System.Windows.Forms.ToolStripButton
     Friend WithEvents iconImage As System.Windows.Forms.ImageList
-    Friend WithEvents ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents toolStripReset As System.Windows.Forms.ToolStripButton
-    Friend WithEvents ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents toolStripSave As System.Windows.Forms.ToolStripButton
-    Friend WithEvents toolStripLoad As System.Windows.Forms.ToolStripButton
-    Friend WithEvents toolStripInfo As System.Windows.Forms.ToolStripButton
+    Friend WithEvents MenuStrip1 As System.Windows.Forms.MenuStrip
+    Friend WithEvents FileToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStrip_ResetMaze As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem1 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents ToolStrip_LoadMaze As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStrip_SaveMaze As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents HelpToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStrip_EditorInstructions As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem2 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents ExitToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents SettingsToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStrip_Debug As System.Windows.Forms.ToolStripMenuItem
 End Class
