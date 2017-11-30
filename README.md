@@ -1,11 +1,23 @@
 # Pac-Man
 Pac-Man project in VB.NET.
-
-This version includes:
-
 A fully functioning, playable Pac-Man game.
 
-As well as a map editor, allowing you to design your own maze and load it into the game to play, just like the standard maze. Adding a new, exciting and creative, way to play the classic game of Pac-Man.
+This version includes:
+- Arcade-accurate ghost AI
+- Accurate recreation of original gameplay
+- A re-usable threaded game engine that supports tiles, maps, fonts and sprites
+- An integrated maze editor for creating new mazes
+
+Missing:
+- No audio
+- One player only
+
+About:
+I developed this for my A-Level AQA Non Exam Assessment 2017.
+The project was created in Visual Basic 2012 with no additional 3rd party plugins.
+
+The assets are currently loaded from the debug folder, so if not running from debug, copy the assets to release.
+When I get time, I will hopefully update the project to include the assets as internal resouces.
 
 # Screenshots
 
